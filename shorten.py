@@ -56,9 +56,6 @@ def map(short_code):
 
     return redirect(long_url, 302)
 
-@app.route('/hi')
-def hi():
-    return 'hi'
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True)
