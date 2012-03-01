@@ -24,10 +24,11 @@ Using a 301 status code is appropriate if we never plan to re-use short codes in
 Unit Tests:
 python shorten_tests.py
 
-These tests dont currently work.. I fumbled around a bit with trying to get "Content-Type:application/json" sent with the request but decided to just move on.  The content-type is necessary for the shorten_url code to work.
+These tests dont currently work and haven't been fully tested.. I fumbled around a bit with trying to get "Content-Type:application/json" sent with the request but decided to just move on.  The content-type is necessary for the shorten_url code to work.
 
-curl -X POST -H "Content-Type:application/json" -d '{"custom_short_code": "b", "long_url": "http://www.tinyco.com"}' http://ec2-107-21-139-191.compute-1.amazonaws.com:5000/shorten_url
+I managed to run through my test cases using curl.. but have not documented all the curl requests i sent through.
+curl -X POST -H "Content-Type:application/json" -d '{"custom_short_code": "b", "long_url": "http://www.tinyco.com"}' http://ec2-107-20-43-135.compute-1.amazonaws.com:5000/shorten_url
 
 
 EC2 instance:
-ec2-107-21-139-191.compute-1.amazonaws.com:5000/shorten_url
+http://ec2-107-20-43-135.compute-1.amazonaws.com:5000/shorten_url
