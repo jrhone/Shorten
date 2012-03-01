@@ -9,7 +9,7 @@ I went with random alphanumeric character generation, seeded by current system t
 
 
 Data Store:
-I've stored a mapping of short_codes to long_urls in a global dictionary in my solution, but would not do this in a production environment.  In production we'd have a number of boxes serving requests and there would need to be shared data.
+I've stored a mapping of short_codes to long_urls in a global dictionary in my solution, but would not do this in a production environment.  In production we'd have a number of boxes serving requests and there would need to be shared data.  There would need to be better management around transactions and race conditions.
 
 In this scenario it would be appropriate to use mysql to store the writes during the creation of the short url's to take advantage of it's reliable acid properties and persistent storage.  Due to the high reads though coupled with the need for low latency, it would not be best to serve reads from MySql.
 

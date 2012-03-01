@@ -20,14 +20,10 @@ def create_short_code():
 def shorten():
     try:
         data = request.json
-    except ValueError:
-        abort(400, 'Malformed request: could not parse json')
-
-    try:
         long_url = data['long_url']
         custom_short_code = data.get('custom_short_code', None)
     except Exception:
-        abort(400, 'Invalid request payload: {custom_short_code(optional): ..., long_url:...}')
+        abort(400, 'Malformed request or Invalid payload: {custom_short_code(optional): ..., long_url:...}')
 
     #verify custom code availability
     if custom_short_code is not None and urls.get(custom_short_code) is not None:
@@ -58,5 +54,5 @@ def map(short_code):
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=True)
+    app.run(host='0.0.0.0')
 
