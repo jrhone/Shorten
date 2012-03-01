@@ -1,0 +1,33 @@
+@author: jrhone
+
+Notes:
+There was a requirement to return "success: false" in certain cases.  I chose to only do a single attempt at short code generation and return false in the failure instance caused by duplication of the code.  The caller of the api could use the false to retry a certain number of times before returning to the user that the action failed.
+
+
+Code Generation:
+I went with random alphanumeric character generation, seeded by current system time on each create code call.  Another option would have been to keep an auto-incrementing index like in a mysql db for instance and create the short code from the id, doing some mapping of integers to one of the available 62 characters that we have.
+
+
+Data Store:
+I've stored a mapping of short_codes to long_urls in a global dictionary in my solution, but would not do this in a production environment.  In production we'd have a number of boxes serving requests and there would need to be shared data.
+
+In this scenario it would be appropriate to use mysql to store the writes during the creation of the short url's to take advantage of it's reliable acid properties and persistent storage.  Due to the high reads though coupled with the need for low latency, it would not be best to serve reads from MySql.
+
+We'd like reads to be as fast as possible so best is to fetch from memory.  After writing to mysql we could spread the data to our Redis instance(s) which will then serve our reads and provide low latency.  Redis is not reliable in the same way as mysql, if the instance dies we lose its data.  There are backup mechanisms like snapshotting and appending to files but they incur a large resource penalty and it might be easier to maintain a single master copy of short_code->url state on mysql and simply reload from mysql into redis in the case of a redis failure.
+
+
+302 vs 301 Status Code:
+A 301 status code means that a page has permanently moved to a new location, while a 302 status code means that a page has temporarily moved to a new location.
+Using a 301 status code is appropriate if we never plan to re-use short codes in our system.  If we do plan to re-assign short codes and we use a 301 status code, a user might still have the original long url cached and will get out of date results.  If we use a 302 status code, the redirect is never cached and we can re-use short codes but we lose the added gain in speed that we get from the caching.  In a situation where it was uncertain if short codes would be re-used, I would use a 302 status code because most of the latency in the redirect is along other parts of the pipe.  
+
+
+Unit Tests:
+python shorten_tests.py
+
+These tests dont currently work.. I fumbled around a bit with trying to get "Content-Type:application/json" sent with the request but decided to just move on.  The content-type is necessary for the shorten_url code to work.
+
+curl -X POST -H "Content-Type:application/json" -d '{"custom_short_code": "b", "long_url": "http://www.tinyco.com"}' http://ec2-107-21-139-191.compute-1.amazonaws.com:5000/shorten_url
+
+
+EC2 instance:
+ec2-107-21-139-191.compute-1.amazonaws.com:5000/shorten_url
