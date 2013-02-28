@@ -1,5 +1,22 @@
 @author: jrhone
 
+
+ASSIGNMENT
+
+This exercise will take you somewhere around 2-3 hours.
+
+Design a url shortener (like bit.ly) which we can use for a custom domain. The requirements are:
+A POST /shorten_url endpoint with json payload {custom_short_code(optional): ..., long_url:...} -> returns {success: true/false, short_code} [Raise an error if the user asks for a custom code but cannot be assigned. If custom is not requested, assign a alphanumeric code of length 6]
+A /{custom_short_code} endpoint which redirects to a long url
+Discuss the design tradeoffs in how you can use technologies you know, like redis for instance to trade between reliability and latency.
+Would you use a HTTP 301 or a 302? What would each of those mean for this system?
+If you decide to use python, bottle or flask are great! Please also try to write quick unit tests as they usually tell us a lot about the engineer.
+
+Please share the github repo(notes in README) with us when you are done. It'll be nice if you can point us to a running (EC2, or whatever) instance as well.
+
+
+SOLUTION
+
 Notes:
 There was a requirement to return "success: false" in certain cases.  I chose to only do a single attempt at short code generation and return false in the failure instance caused by duplication of the code.  The caller of the api could use the false to retry a certain number of times before returning to the user that the action failed.
 
