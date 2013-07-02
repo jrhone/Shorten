@@ -1,18 +1,21 @@
 @author: jrhone
-
+5/25/2012
 
 ASSIGNMENT
 
 This exercise will take you somewhere around 2-3 hours.
 
-Design a url shortener (like bit.ly) which we can use for a custom domain. The requirements are:
-A POST /shorten_url endpoint with json payload {custom_short_code(optional): ..., long_url:...} -> returns {success: true/false, short_code} [Raise an error if the user asks for a custom code but cannot be assigned. If custom is not requested, assign a alphanumeric code of length 6]
-A /{custom_short_code} endpoint which redirects to a long url
-Discuss the design tradeoffs in how you can use technologies you know, like redis for instance to trade between reliability and latency.
-Would you use a HTTP 301 or a 302? What would each of those mean for this system?
-If you decide to use python, bottle or flask are great! Please also try to write quick unit tests as they usually tell us a lot about the engineer.
+Design a url shortener (like bit.ly) which we can use for a custom domain. 
 
-Please share the github repo(notes in README) with us when you are done. It'll be nice if you can point us to a running (EC2, or whatever) instance as well.
+The requirements are:
+- A POST /shorten_url endpoint with json payload {custom_short_code(optional): ..., long_url:...} -> returns {success: true/false, short_code} [Raise an error if the user asks for a custom code but cannot be assigned. If custom is not requested, assign a alphanumeric code of length 6]
+- A /{custom_short_code} endpoint which redirects to a long url
+- Discuss the design tradeoffs in how you can use technologies you know, like redis for instance to trade between reliability and latency.
+- Would you use a HTTP 301 or a 302? What would each of those mean for this system?
+
+If you decide to use python, bottle or flask are great!
+
+Please share the github repo(notes in README) with us when you are done.
 
 
 SOLUTION
@@ -37,15 +40,3 @@ We'd like reads to be as fast as possible so best is to fetch from memory.  Afte
 A 301 status code means that a page has permanently moved to a new location, while a 302 status code means that a page has temporarily moved to a new location.
 Using a 301 status code is appropriate if we never plan to re-use short codes in our system.  If we do plan to re-assign short codes and we use a 301 status code, a user might still have the original long url cached and will get out of date results.  If we use a 302 status code, the redirect is never cached and we can re-use short codes but we lose the added gain in speed that we get from the caching.  In a situation where it was uncertain if short codes would be re-used, I would use a 302 status code because most of the latency in the redirect is along other parts of the pipe.  
 
-
-Unit Tests:
-python shorten_tests.py
-
-These tests dont currently work and haven't been fully tested.. I fumbled around a bit with trying to get "Content-Type:application/json" sent with the request but decided to just move on.  The content-type is necessary for the shorten_url code to work.
-
-I managed to run through my test cases using curl.. but have not documented all the curl requests i sent through.
-curl -X POST -H "Content-Type:application/json" -d '{"custom_short_code": "b", "long_url": "http://www.tinyco.com"}' http://ec2-107-20-43-135.compute-1.amazonaws.com:5000/shorten_url
-
-
-EC2 instance:
-http://ec2-107-20-43-135.compute-1.amazonaws.com:5000/shorten_url
